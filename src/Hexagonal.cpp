@@ -1,8 +1,9 @@
 #include "Hexagonal.h"
 
 #include "Map.h"
-#include <cassert>
 #include "Vector.h"
+
+#include <cassert>
 
 namespace SkyZrath
 {
@@ -24,7 +25,14 @@ namespace SkyZrath
         assert(v.x + v.y + v.z == 0);
     }
 
-    Hexagonal *Hexagonal::getNeighbor(Direction direction) const
+    Hexagonal::~Hexagonal()
+    {
+#ifndef DEBUG
+        std::cout << "Tile removed on " << mPosition << std::endl;
+#endif // DEBUG
+    }
+
+    HexagonalPtr Hexagonal::getNeighbor(Direction direction) const
     {
         return Map::getInstance()->getTile(cubicToPoint(mPosition + directions.at(static_cast<int>(direction))));
     }
@@ -32,13 +40,41 @@ namespace SkyZrath
     const Vector<int> Hexagonal::pointToCubic(const Vector2D<int> &p)
     {
         const auto x = p.x - (p.y - (p.y & 1)) / 2;
-        const auto z = p.y;
-        const auto y = -x - z;
-        return {x, y, z};
+
+        assert(x + -x - p.y + p.y == 0);
+
+        return {x, -x - p.y, p.y};
     }
 
     const Vector2D<int> Hexagonal::cubicToPoint(const Vector<int> &v)
     {
+        assert(v.x + v.y + v.z == 0);
+
         return {v.x + (v.z - (v.z & 1)) / 2, v.z};
+    }
+
+    const std::set<Vector<int>> Hexagonal::getWithinRadius(const Vector<int> &v, const int r)
+    {
+#ifdef DEBUG
+        std::cout << "vector " << v << ", radius " << r << std::endl;
+#endif // DEBUG
+
+        assert(v.x + v.y + v.z == 0);
+        assert(r);
+
+        std::set<Vector<int>> result;
+
+        for (int x = -r; x <= r; ++x)
+        {
+            for (int y = std::max(-r, -x - r); y <= std::min(r, -x + r); ++y)
+            {
+#ifdef DEBUG
+                std::cout << "(" << x + v.x << "," << y + v.y << "," << v.z - x - y << ")" << std::endl;
+#endif // DEBUG
+                result.insert({v.x + x, v.y + y, v.z - x - y});
+            }
+        }
+
+        return result;
     }
 } // namespace SkyZrath

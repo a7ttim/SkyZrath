@@ -1,34 +1,32 @@
-#define BOOST_TEST_MODULE SkyZrathHexagonalTest
+#define BOOST_TEST_MODULE SkyZrathMapTest
 
 #include <boost/test/included/unit_test.hpp>
 #include <boost/bind.hpp>
 
-#include "../src/Hexagonal.h"
+#include "../src/Map.h"
 
 using namespace SkyZrath;
 
-BOOST_AUTO_TEST_CASE(cubicToPointTest)
-/* Compare with void free_test_function() */
+BOOST_AUTO_TEST_CASE(loadWithinRadius)
 {
-  const auto testData1 = Vector<int>(2, 0, -2);
-  const auto expected1 = Vector2D<int>(1, -2);
+  auto *map = Map::getInstance();
 
-  const auto testData2 = Vector<int>(-2, 1, 1);
-  const auto expected2 = Vector2D<int>(-2, 1);
-
-  BOOST_TEST(Hexagonal::cubicToPoint(testData1) == expected1);
-  BOOST_TEST(Hexagonal::cubicToPoint(testData2) == expected2);
-}
-
-BOOST_AUTO_TEST_CASE(pointToCubicTest)
-/* Compare with void free_test_function() */
-{
-  const auto testData1 = Vector2D<int>(1, -2);
-  const auto expected1 = Vector<int>(2, 0, -2);
-
-  const auto testData2 = Vector2D<int>(-2, 1);
-  const auto expected2 = Vector<int>(-2, 1, 1);
+  const auto testDataRadius1 = 1;
+  const auto testDataRadius2 = 2;
+  const auto testData1 = Vector<int>(0, 0, 0);
+  const auto testData2 = Vector<int>(3, -3, 0);
   
-  BOOST_TEST(Hexagonal::pointToCubic(testData1) == expected1);
-  BOOST_TEST(Hexagonal::pointToCubic(testData2) == expected2);
+  const auto expected1 = 7;
+  const auto expected2 = 19;
+
+  map->setRadius(testDataRadius1);
+  map->loadWithinRadius(testData1);
+  const auto result1 = map->size();
+
+  map->setRadius(testDataRadius2);
+  map->loadWithinRadius(testData2);
+  const auto result2 = map->size();
+  
+  BOOST_TEST(result1 == expected1);
+  BOOST_TEST(result2 == expected2);
 }

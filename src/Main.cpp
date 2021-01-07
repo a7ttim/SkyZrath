@@ -5,14 +5,14 @@ int main(int argc, char **argv)
 {
 	using namespace SkyZrath;
 
-	auto* map = new Map();
+	auto* map = Map::getInstance();
 
 	std::string in;
 
-	//SkyZrath::Vector<float> vector1{5., 6., 7.};
-
 	std::cout << map->size() << std::endl;
 	std::cin;
+
+	const auto result1 = Hexagonal::getWithinRadius(Vector<int>(0, 0, 0), 1);
 
 	map->~Map();
 	return 0;
